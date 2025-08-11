@@ -7,6 +7,7 @@ import {
   getNotes,
   updateNote,
   deleteNote,
+  getNoteById,
 } from "../controllers/noteController.js";
 
 const router = express.Router();
@@ -16,6 +17,9 @@ router.post("/", protect, upload.array("attachments", 3), createNote);
 
 // 📌 Get all notes for user
 router.get("/", protect, getNotes);
+
+// 📌 Get a single note by ID
+router.get("/:id", protect, getNoteById);
 
 // 📌 Update a note
 router.put("/:id", protect, updateNote);

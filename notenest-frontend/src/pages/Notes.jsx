@@ -8,11 +8,8 @@ export default function Notes() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // For edit
-  const [editId, setEditId] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState("");
-  const [editError, setEditError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const navigate = useNavigate();
 
@@ -33,43 +30,16 @@ export default function Notes() {
     }
   };
 
-  const startEdit = (note) => {
-    setEditId(note._id);
-    setEditTitle(note.title);
-    setEditContent(note.content);
-    setEditError(null);
+  const confirmDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
   };
 
-  const cancelEdit = () => {
-    setEditId(null);
-    setEditTitle("");
-    setEditContent("");
-    setEditError(null);
-  };
-
-  const submitEdit = async (e) => {
-    e.preventDefault();
-    setEditError(null);
-
-    if (!editTitle || !editContent) {
-      setEditError("Title and content required.");
-      return;
-    }
-
+  const handleDelete = async () => {
     try {
-      await api.put(`/notes/${editId}`, { title: editTitle, content: editContent });
-      cancelEdit();
-      fetchNotes();
-    } catch {
-      setEditError("Failed to update note.");
-    }
-  };
-
-  const deleteNote = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this note?")) return;
-
-    try {
-      await api.delete(`/notes/${id}`);
+      await api.delete(`/notes/${deleteId}`);
+      setShowDeleteModal(false);
+      setDeleteId(null);
       fetchNotes();
     } catch {
       alert("Failed to delete note.");
@@ -86,64 +56,58 @@ export default function Notes() {
 
       {loading && <p>Loading...</p>}
       {error && <p className="error-msg">{error}</p>}
-      <div class className="middle">
 
-        <ul className="notes-list">
-          {notes.length === 0 ? (
-            <p style={{ color: "#555" }}>No notes found.</p>
-          ) : (
-            notes.map((note) => (
-              <li key={note._id}>
-                {editId === note._id ? (
-                  <form onSubmit={submitEdit}>
-                    <input
-                      type="text"
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      required
-                      placeholder="Title"
-                    />
-                    <textarea
-                      value={editContent}
-                      onChange={(e) => setEditContent(e.target.value)}
-                      required
-                      placeholder="Content"
-                    />
-                    <div className="button-group">
-                      <button type="submit" className="edit-btn">Save</button>
-                      <button type="button" onClick={cancelEdit}>
-                        Cancel
-                      </button>
-                    </div>
-                    {editError && <p className="error-msg">{editError}</p>}
-                  </form>
-                ) : (
-                  <>
-                    <h3>{note.title}</h3>
-                    <p>{note.content}</p>
-                    <div className="button-group">
-                      <button onClick={() => startEdit(note)} className="edit-btn">
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteNote(note._id)}
-                        className="delete-btn"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </>
-                )}
-              </li>
-            ))
-          )}
-        </ul>
-      </div>
+      <ul className="notes-list">
+        {notes.length === 0 ? (
+          <p style={{ color: "#555" }}>No notes found.</p>
+        ) : (
+          notes.map((note) => (
+            <li key={note._id}>
+              <h3>{note.title}</h3>
+              <p>{note.content}</p>
+              <div className="button-group">
+                <button onClick={() => navigate(`/notes/view/${note._id}`)} className="view-btn">
+                  View
+                </button>
+
+                <button
+                  onClick={() => navigate(`/notes/edit/${note._id}`)}
+                  className="edit-btn"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => confirmDelete(note._id)}
+                  className="delete-btn"
+                >
+                  Delete
+                </button>
+              </div>
+            </li>
+          ))
+        )}
+      </ul>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal glass-card">
+            <h1>Confirm Delete</h1>
+            <p>Are you sure you want to delete this note?</p>
+            <div className="button-group">
+              <button onClick={handleDelete} className="delete-btn">
+                Yes, Delete
+              </button>
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="cancel-btn"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-
-
-
-

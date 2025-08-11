@@ -36,6 +36,24 @@ export const createNote = async (req, res) => {
   }
 };
 
+// Get Note by ID
+export const getNoteById = async (req, res) => {
+  try {
+    const note = await Note.findOne({
+      _id: req.params.id,
+      userId: req.user._id, // ✅ Ensures user only accesses their own notes
+    });
+
+    if (!note) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    res.json(note);
+  } catch (error) {
+    res.status(400).json({ error: "Invalid note ID" });
+  }
+};
+
 
 // Get All Notes (for a user)
 export const getNotes = async (req, res) => {

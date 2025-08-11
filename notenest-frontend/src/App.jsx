@@ -11,9 +11,9 @@ import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotesAdd from "./pages/NotesAdd";
 import Footer from "./components/Footer";
-// import "./index.css";
-
-// import "./App.css"; // new background styles
+import NotesEdit from "./pages/NotesEdit";
+import NotesView from "./pages/NotesView";
+import "./index.css";
 
 export default function App() {
 
@@ -44,6 +44,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <NotesAdd />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes/edit/:id"
+            element={
+              <ProtectedRoute>
+                <NotesEdit />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/notes/view/:id"
+            element={
+              <ProtectedRoute>
+                <NotesView />
               </ProtectedRoute>
             }
           />
