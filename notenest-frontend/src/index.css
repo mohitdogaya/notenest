@@ -1,0 +1,206 @@
+:root {
+  --bg-dark-1: #000000;
+  --bg-dark-2: #0a0a0f;
+  --bg-accent-cyan: rgba(0, 255, 255, 0.55);
+  --bg-accent-pink: rgba(255, 0, 127, 0.45);
+  --bg-accent-blue: rgba(0, 128, 255, 0.45);
+
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-input: rgba(255, 255, 255, 0.14);
+  --text-light: rgba(255, 255, 255, 0.92);
+  --text-muted: rgba(255, 255, 255, 0.7);
+}
+
+/* Reset and base */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark-1);
+  color: var(--text-light);
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  overflow-x: hidden;
+  overflow-y: auto; 
+  position: relative;
+  z-index: 0;
+}
+
+/* IMPORTANT: app-background should NOT scroll separately */
+.app-background {
+  min-height: 100vh;
+  position: relative;
+  overflow: visible;  /* Remove scroll here */
+  background-color: var(--bg-dark-1);
+  z-index: 0;
+}
+
+/* Content inside app-background */
+.app-background .content,
+.app-background > .content {
+  position: relative;
+  z-index: 10;
+  padding-top: 72px; /* for navbar space */
+  min-height: calc(100vh - 72px);
+  overflow: visible; /* no scroll here either */
+}
+
+/* Glow circles */
+.glow-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+
+  max-width: 100vw;
+  max-height: 100vh;
+}
+
+.circle1 {
+  width: 380px;
+  height: 380px;
+  background: var(--bg-accent-cyan);
+  top: -120px;
+  left: -120px;
+}
+
+.circle2 {
+  width: 420px;
+  height: 420px;
+  background: var(--bg-accent-pink);
+  bottom: -140px;
+  right: -120px;
+}
+
+.circle3 {
+  width: 220px;
+  height: 220px;
+  background: var(--bg-accent-blue);
+  top: 40%;
+  left: 70%;
+}
+
+@keyframes floatSlow {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) translateX(8px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+}
+
+.glow-circle {
+  animation: floatSlow 12s ease-in-out infinite;
+}
+
+/* Utilities */
+.container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.center {
+  text-align: center;
+}
+
+/* Glass card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 14px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  color: var(--text-light);
+  position: relative;
+  z-index: 1;
+}
+
+/* signup and login css */
+
+/* Auth Form Container */
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 12px;
+  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* Title */
+.auth-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Form */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input */
+.auth-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 1rem;
+  color: #fff;
+  outline: none;
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Button */
+.auth-button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background-color: #2980b9;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #1f6691;
+}
+
+/* Error Message */
+.auth-error {
+  color: #ff6b6b;
+  margin-top: 10px;
+  text-align: center;
+}
