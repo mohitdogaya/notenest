@@ -38,6 +38,25 @@ export const createTask = async (req, res) => {
   }
 };
 
+// ✅ Get Task by ID
+export const getTaskById = async (req, res) => {
+  try {
+    const task = await Task.findOne({
+      _id: req.params.id,
+      userId: req.user._id,  // ensures user can only get their own task
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    res.status(200).json(task);
+  } catch (error) {
+    res.status(400).json({ error: "Invalid task ID" });
+  }
+};
+
+
 // ✅ Get All Tasks
 export const getTasks = async (req, res) => {
   try {

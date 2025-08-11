@@ -9,6 +9,8 @@ export default function NotesEdit() {
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState("");
+  const [attachments, setAttachments] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,20 +22,46 @@ export default function NotesEdit() {
       const res = await api.get(`/notes/${id}`);
       setTitle(res.data.title);
       setContent(res.data.content);
+      setTags(res.data.tags ? res.data.tags.join(", ") : "");
+      // You may want to handle existing attachments display separately
     } catch {
       setError("Failed to load note.");
     }
   };
 
+  const handleFileChange = (e) => {
+    setAttachments(Array.from(e.target.files));
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await api.put(`/notes/${id}`, { title, content });
+      const formData = new FormData();
+      formData.append("title", title);
+      formData.append("content", content);
+
+      const tagsArray = tags
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+
+      formData.append("tags", JSON.stringify(tagsArray));  // Send tags as JSON string
+
+      attachments.forEach((file) => {
+        formData.append("attachments", file);
+      });
+
+      await api.put(`/notes/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       navigate("/notes");
-    } catch {
+    } catch (err) {
+      console.error("Edit note error:", err);
       setError("Failed to update note.");
     }
   };
+
 
   return (
     <div className="notes-edit-container-glass-card">
@@ -54,9 +82,25 @@ export default function NotesEdit() {
           onChange={(e) => setContent(e.target.value)}
           required
         />
+        <input
+          type="text"
+          placeholder="Tags (comma separated)"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
+        />
+        <input
+          type="file"
+          multiple
+          onChange={handleFileChange}
+          accept="image/*"
+        />
         <div className="button-group">
-          <button type="submit" className="edit-btn">Save Changes</button>
-          <button type="button" onClick={() => navigate("/notes")}>Cancel</button>
+          <button type="submit" className="edit-btn">
+            Save Changes
+          </button>
+          <button type="button" onClick={() => navigate("/notes")}>
+            Cancel
+          </button>
         </div>
       </form>
     </div>

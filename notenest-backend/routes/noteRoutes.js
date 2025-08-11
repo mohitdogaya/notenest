@@ -22,7 +22,8 @@ router.get("/", protect, getNotes);
 router.get("/:id", protect, getNoteById);
 
 // 📌 Update a note
-router.put("/:id", protect, updateNote);
+router.put("/:id", protect, upload.array("attachments", 3), updateNote);
+
 
 // 📌 Delete a note
 router.delete("/:id", protect, deleteNote);

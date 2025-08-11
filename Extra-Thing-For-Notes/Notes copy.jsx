@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api from "../notenest-frontend/src/services/api";
 import { useNavigate } from "react-router-dom";
 import "./notes.css";
-
-// Updated function: the backend sends { data: base64String, contentType: string }
-// So just create a data URL directly
-function bufferToBase64(att) {
-  if (!att || !att.data) return null;
-  return `data:${att.contentType};base64,${att.data}`;
-}
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
@@ -72,37 +65,6 @@ export default function Notes() {
             <li key={note._id}>
               <h3>{note.title}</h3>
               <p>{note.content}</p>
-
-              {/* Tags display */}
-              {note.tags && note.tags.length > 0 && (
-                <div className="tags-container">
-                  {note.tags.map((tag, i) => (
-                    <span key={i} className="tag">
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Images display */}
-              {note.attachments && note.attachments.length > 0 && (
-                <div className="attachments-container">
-                  {note.attachments.map((att, idx) => {
-                    const src = bufferToBase64(att);
-                    if (!src) return null;
-                    return (
-                      <img
-                        key={idx}
-                        src={src}
-                        alt={`attachment-${idx}`}
-                        className="note-image"
-                        style={{ maxWidth: 150, marginRight: 10, borderRadius: 6 }}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-
               <div className="button-group">
                 <button onClick={() => navigate(`/notes/view/${note._id}`)} className="view-btn">
                   View

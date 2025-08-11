@@ -1,7 +1,14 @@
 import Note from "../models/Note.js";
 
-// Create Note
+// Helper to convert Buffer attachments to base64 strings
+function convertAttachmentsToBase64(attachments) {
+  return attachments.map(att => ({
+    contentType: att.contentType,
+    data: att.data.toString("base64"), // Convert Buffer to base64 string
+  }));
+}
 
+// Create Note
 export const createNote = async (req, res) => {
   try {
     const { title, content, folder, tags, isPinned } = req.body;
@@ -41,25 +48,38 @@ export const getNoteById = async (req, res) => {
   try {
     const note = await Note.findOne({
       _id: req.params.id,
-      userId: req.user._id, // ✅ Ensures user only accesses their own notes
+      userId: req.user._id,
     });
 
     if (!note) {
       return res.status(404).json({ error: "Note not found" });
     }
 
-    res.json(note);
+    const noteObj = note.toObject();
+    if (noteObj.attachments && noteObj.attachments.length > 0) {
+      noteObj.attachments = convertAttachmentsToBase64(noteObj.attachments);
+    }
+
+    res.json(noteObj);
   } catch (error) {
     res.status(400).json({ error: "Invalid note ID" });
   }
 };
 
-
-// Get All Notes (for a user)
+// Get All Notes (for user)
 export const getNotes = async (req, res) => {
   try {
     const notes = await Note.find({ userId: req.user._id });
-    res.json(notes);
+
+    const notesObj = notes.map(note => {
+      const notePlain = note.toObject();
+      if (notePlain.attachments && notePlain.attachments.length > 0) {
+        notePlain.attachments = convertAttachmentsToBase64(notePlain.attachments);
+      }
+      return notePlain;
+    });
+
+    res.json(notesObj);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch notes" });
   }
@@ -68,12 +88,48 @@ export const getNotes = async (req, res) => {
 // Update Note
 export const updateNote = async (req, res) => {
   try {
-    const updated = await Note.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (error) {
-    res.status(400).json({ error: "Failed to update note" });
+    const { title, content, tags } = req.body;
+    const noteId = req.params.id;
+
+    // Parse tags, multer stores text fields as strings, so tags might be a JSON string or array of strings
+    let tagsArray = [];
+    if (tags) {
+      if (typeof tags === "string") {
+        // single string, parse it
+        tagsArray = JSON.parse(tags); // if sent as JSON string
+        // or
+        // tagsArray = tags.split(",").map(t => t.trim());
+      } else if (Array.isArray(tags)) {
+        tagsArray = tags;
+      }
+    }
+
+    // Find the note to update
+    const note = await Note.findById(noteId);
+    if (!note) return res.status(404).json({ error: "Note not found" });
+
+    // Update fields
+    if (title) note.title = title;
+    if (content) note.content = content;
+    note.tags = tagsArray;
+
+    // Handle new attachments (append or replace, depending on your logic)
+    if (req.files && req.files.length > 0) {
+      const newAttachments = req.files.map(file => ({
+        data: file.buffer,
+        contentType: file.mimetype,
+      }));
+      // Append new attachments to existing ones (or replace)
+      note.attachments = [...note.attachments, ...newAttachments];
+    }
+
+    await note.save();
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update note", details: err.message });
   }
 };
+
 
 // Delete Note
 export const deleteNote = async (req, res) => {
@@ -84,4 +140,3 @@ export const deleteNote = async (req, res) => {
     res.status(400).json({ error: "Failed to delete note" });
   }
 };
-

@@ -5,17 +5,23 @@
   padding: 0 20px;
   text-align: center;
   color: var(--text-light);
-  /* font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif; */
+}
+.notes-container-view {
+  max-width: 900px;
+  margin: 20px auto 60px;
+  padding: 0 20px;
+  text-align: center;
+  color: var(--text-light);
 }
   
 
 /* Title */
-.notes-container h3, h2 {
+/* h3, h2 {
   font-size: 3.5rem; 
-  /* font-weight: 800; */
+  font-weight: 800;
   margin: 25px;
   text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
-}
+} */
 
 /* Add Note Button */
 .add-note-btn {
@@ -42,7 +48,7 @@
 /* Notes list as flex column */
 .notes-list {
   display: flex;
-  /* flex-direction: column; */
+  flex-direction: column;
   gap: 30px;
   padding: 0;
   margin: 0;
