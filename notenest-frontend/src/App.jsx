@@ -13,7 +13,8 @@ import NotesAdd from "./pages/NotesAdd";
 import Footer from "./components/Footer";
 import NotesEdit from "./pages/NotesEdit";
 import NotesView from "./pages/NotesView";
-import "./index.css";
+import UserProfile from "./pages/UserProfile";
+import "./index.css"; 
 
 export default function App() {
 
@@ -60,6 +61,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <NotesView />
+              </ProtectedRoute>
+            }
+          />
+          {/* ✅ User Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
               </ProtectedRoute>
             }
           />
